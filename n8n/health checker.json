@@ -17,7 +17,7 @@
         -16,
         128
       ],
-      "id": "58bd0ada-5df8-4c9a-a535-fe16fb5f2ba8",
+      "id": "workflow-trigger",
       "name": "When Executed by Another Workflow"
     },
     {
@@ -34,7 +34,7 @@
         560,
         -384
       ],
-      "id": "4edc7233-8f96-4fe6-8066-8d542d41f138",
+      "id": "health-agent",
       "name": "Health"
     },
     {
@@ -52,12 +52,12 @@
         544,
         -144
       ],
-      "id": "980406b4-a859-4bad-8376-9ce7fe663f0f",
+      "id": "openai-chat-1",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "KuTL3Rm9eMPwcXxs",
-          "name": "OpenAi account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAI API - REPLACE WITH YOUR CREDENTIALS"
         }
       }
     },
@@ -76,12 +76,12 @@
         640,
         752
       ],
-      "id": "7f6f3b2e-e068-4381-a3d6-25a13d7f4db6",
+      "id": "openai-chat-2",
       "name": "OpenAI Chat Model2",
       "credentials": {
         "openAiApi": {
-          "id": "KuTL3Rm9eMPwcXxs",
-          "name": "OpenAi account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAI API - REPLACE WITH YOUR CREDENTIALS"
         }
       }
     }
@@ -122,11 +122,9 @@
     "timezone": "Asia/Kolkata",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "3b4f31c2-13ab-4f89-b1d7-2e13e1d976ba",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "e6dcab5515fca65dc97773292a0a5a70015bd1aef06aef60b168ded1f1dc0f9b"
+    "templateCredsSetupCompleted": true
   },
-  "id": "pG51tuurVgC2TwJM",
-  "tags": []
+  "tags": [],
+  "_comment": "IMPORTANT: Credential IDs have been replaced with placeholders. Replace YOUR_CREDENTIAL_ID with your own OpenAI credentials before use."
 }
