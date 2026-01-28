@@ -140,7 +140,7 @@ ai-health-whatsapp-bot/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/ai-health-whatsapp-bot.git
+   git clone https://github.com/Niru-26016/ai-health-whatsapp-bot.git
    cd ai-health-whatsapp-bot
    ```
 
@@ -199,8 +199,8 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 Built by **Niranjan** for Smart India Hackathon 2025
 
-- 💼 [LinkedIn](https://linkedin.com/in/YOUR_LINKEDIN)
-- 🐙 [GitHub](https://github.com/YOUR_GITHUB)
+- 💼 [LinkedIn](https://www.linkedin.com/in/niranjanreddy26)
+- 🐙 [GitHub](https://github.com/Niru-26016)
 
 ---
 
