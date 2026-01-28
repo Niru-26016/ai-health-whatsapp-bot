@@ -42,22 +42,22 @@ This project brings **AI-powered health guidance** directly to WhatsApp — the 
 ### Image Analysis (English)
 *User sends skin condition image → AI provides possible conditions and recommends dermatologist*
 
-![Image Analysis](screenshots/image-analysis-english.jpg)
+![Image Analysis](screenshots/image-analysis-english.png)
 
 ### Voice Response (Tamil)
 *User sends voice note describing symptoms → AI responds in Tamil with health guidance*
 
-![Voice Response Tamil](screenshots/voice-response-tamil.jpg)
+![Voice Response Tamil](screenshots/voice-response-tamil.png)
 
 ### Hospital Locator
 *User shares location → AI provides nearby hospital names and contact numbers*
 
-![Hospital Locator](screenshots/hospital-locator.jpg)
+![Hospital Locator](screenshots/hospital-locator.png)
 
-### Text Response (Telugu)
-*User types symptoms in Telugu → AI responds with advice in Telugu*
+### Text + Voice Response (Telugu)
+*User types symptoms in Telugu → AI responds with text advice + voice audio*
 
-![Text Response Telugu](screenshots/text-response-telugu.jpg)
+![Text Voice Telugu](screenshots/text-voice-telugu.png)
 
 ---
 
@@ -110,10 +110,10 @@ ai-health-whatsapp-bot/
 ├── .gitignore
 ├── screenshots/
 │   ├── workflow.jpg
-│   ├── image-analysis-english.jpg
-│   ├── voice-response-tamil.jpg
-│   ├── hospital-locator.jpg
-│   └── text-response-telugu.jpg
+│   ├── image-analysis-english.png
+│   ├── voice-response-tamil.png
+│   ├── hospital-locator.png
+│   └── text-voice-telugu.png
 ├── architecture/
 │   └── system-diagram.md
 ├── n8n/
