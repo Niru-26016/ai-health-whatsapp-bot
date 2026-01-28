@@ -1,0 +1,1017 @@
+{
+  "name": "Main",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "={{ $('Text').item.json.messages[0].from }}",
+        "textBody": "={{ $json.message }}{{ $json.output }}{{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        1184
+      ],
+      "id": "send-message-node",
+      "name": "Send message",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "=You are a medical AI assistant that analyzes symptoms and provides preliminary assessments.\n\ncurrent time and date:{{ $now }}\ncall the tools for health and medical advise\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        832
+      ],
+      "id": "ai-agent-text",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "text-condition"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "image-condition",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "audio-condition",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "location-condition",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "location",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "location"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -80,
+        1264
+      ],
+      "id": "message-type-switch",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.messages[0].audio.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        144,
+        1888
+      ],
+      "id": "download-audio-media",
+      "name": "Download media",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.messages[0].image.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        144,
+        1344
+      ],
+      "id": "download-image-media",
+      "name": "Download media1",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "download-audio-file",
+      "name": "Download Media File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        368,
+        1888
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Header Auth - REPLACE WITH YOUR CREDENTIALS"
+        },
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "response": {}
+        }
+      },
+      "id": "download-image-file",
+      "name": "Download Media File1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        368,
+        1344
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Header Auth - REPLACE WITH YOUR CREDENTIALS"
+        },
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Text').item.json.contacts[0].wa_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        2112
+      ],
+      "id": "memory-audio",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content.parts[0].text }}",
+        "options": {
+          "systemMessage": "=You are a medical AI assistant that analyzes symptoms and provides preliminary assessments. based on the user input via audio \nIMPORTANT: Always emphasize that this is not a substitute for professional medical advice and replay in their language \nalso user emotion to find the diseases\ncurrent time and date:{{ $now }}\ncall the tools for health and medical advise\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        1888
+      ],
+      "id": "ai-agent-audio",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "description": "call the tools for health, medical advice and emergency \n",
+        "workflowId": {
+          "__rl": true,
+          "value": "YOUR_WORKFLOW_ID",
+          "mode": "list",
+          "cachedResultName": "health checker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "userMessage": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('userMessage', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "userMessage"
+          ],
+          "schema": [
+            {
+              "id": "userMessage",
+              "displayName": "userMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        2112
+      ],
+      "id": "health-tool-audio",
+      "name": "Call n8n Workflow Tool1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Text').item.json.contacts[0].wa_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        1568
+      ],
+      "id": "memory-image",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        1296
+      ],
+      "id": "whatsapp-trigger",
+      "name": "Text",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp OAuth - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "call the tools for health, medical advice and emergency \n",
+        "workflowId": {
+          "__rl": true,
+          "value": "YOUR_WORKFLOW_ID",
+          "mode": "list",
+          "cachedResultName": "health checker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "userMessage": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('userMessage', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "userMessage"
+          ],
+          "schema": [
+            {
+              "id": "userMessage",
+              "displayName": "userMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        1056
+      ],
+      "id": "health-tool-text",
+      "name": "health assist"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        592,
+        1344
+      ],
+      "id": "analyze-image",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAI API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=image caption: {{ $('Text').item.json.messages[0].image.caption }}",
+        "options": {
+          "systemMessage": "=You are a medical AI assistant that analyzes symptoms and provides preliminary assessments. IMPORTANT: Always emphasize that this is not a substitute for professional medical advice at last\nalways \nalways call the tools for health and medical advise\n\n\ncurrent time and date:{{ $now }}\n\n\nthis is the image provided by the user: {{ $json.content }}\n\nouput rules:\nuse simple and easy to understand language with short points and use emojies\nuse single * to make the text bold"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        1344
+      ],
+      "id": "ai-agent-image",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "description": "call the tools for health, medical advice and emergency \n",
+        "workflowId": {
+          "__rl": true,
+          "value": "YOUR_WORKFLOW_ID",
+          "mode": "list",
+          "cachedResultName": "health checker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "userMessage": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('userMessage', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "userMessage"
+          ],
+          "schema": [
+            {
+              "id": "userMessage",
+              "displayName": "userMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        1568
+      ],
+      "id": "health-tool-image",
+      "name": "Call n8n Workflow Tool"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Text').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        1056
+      ],
+      "id": "memory-text",
+      "name": "Simple Memory2",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "What's in this audio? find their language and emotions",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        592,
+        1888
+      ],
+      "id": "analyze-audio",
+      "name": "Analyze audio",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "={{ $('Text').item.json.messages[0].from }}",
+        "messageType": "audio",
+        "mediaPath": "useMedian8n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        1488
+      ],
+      "id": "send-audio",
+      "name": "audio",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "WhatsApp API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "YOUR_VOICE_ID",
+          "mode": "list",
+          "cachedResultName": "Rachel"
+        },
+        "text": "={{ $json.output }}",
+        "additionalOptions": {
+          "model": {
+            "__rl": true,
+            "value": "eleven_v3",
+            "mode": "list",
+            "cachedResultName": "Eleven v3 (alpha)"
+          },
+          "outputFormat": "mp3_22050_32"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        1488
+      ],
+      "id": "text-to-speech",
+      "name": "Convert text to speech",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "ElevenLabs API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the binary data\nconst binaryData = $input.all()[0].binary.data;\n\n// Change the MIME type from audio/mp3 to audio/mpeg\nbinaryData.mimeType = 'audio/mpeg';\n\n// Return the modified binary data\nreturn {\n  json: $input.all()[0].json,\n  binary: {\n    data: binaryData\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        1488
+      ],
+      "id": "fix-audio-mimetype",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=latitude: {{ $json.messages[0].location.latitude }}\nlongitude: {{   $json.messages[0].location.longitude }}\n\nfind hospital numbers near by \njust output only name and number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        416,
+        1584
+      ],
+      "id": "hospital-finder",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        816,
+        1056
+      ],
+      "id": "gemini-chat-text",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        816,
+        1568
+      ],
+      "id": "gemini-chat-image",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        816,
+        2112
+      ],
+      "id": "gemini-chat-audio",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini API - REPLACE WITH YOUR CREDENTIALS"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Convert text to speech",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download media1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download media",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download media": {
+      "main": [
+        [
+          {
+            "node": "Download Media File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download media1": {
+      "main": [
+        [
+          {
+            "node": "Download Media File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Media File1": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Media File": {
+      "main": [
+        [
+          {
+            "node": "Analyze audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call n8n Workflow Tool1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "health assist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Convert text to speech",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call n8n Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Convert text to speech",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze audio": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert text to speech": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [],
+  "_comment": "IMPORTANT: All API keys, tokens, phone numbers, and credentials have been replaced with placeholders for security. Replace YOUR_* values with your own credentials before use."
+}

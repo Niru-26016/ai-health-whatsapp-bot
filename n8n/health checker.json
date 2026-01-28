@@ -1,0 +1,132 @@
+{
+  "name": "health checker",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "userMessage"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        128
+      ],
+      "id": "58bd0ada-5df8-4c9a-a535-fe16fb5f2ba8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.userMessage }}",
+        "options": {
+          "systemMessage": "=You are a medical AI assistant that analyzes symptoms and provides preliminary assessments. IMPORTANT: Always emphasize that this is not a substitute for professional medical advice.\ncurrent time and date:{{ $now }}\n keepit short and simple\nAnalyze the symptoms and provide a JSON response with:\n{\n  \n  \"possible_conditions\": [\"condition1\", \"condition2\"],\n  \"specialist_needed\": \"General Practitioner/Cardiologist/Dermatologist/Neurologist/Orthopedist/Gastroenterologist/Pulmonologist/Emergency\",\n  \n  \"recommended_actions\": [\"action1\", \"action2\"],\n  \"red_flags\": [\"warning sign if any\"]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -384
+      ],
+      "id": "4edc7233-8f96-4fe6-8066-8d542d41f138",
+      "name": "Health"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        -144
+      ],
+      "id": "980406b4-a859-4bad-8376-9ce7fe663f0f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "KuTL3Rm9eMPwcXxs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        752
+      ],
+      "id": "7f6f3b2e-e068-4381-a3d6-25a13d7f4db6",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "KuTL3Rm9eMPwcXxs",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Health",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Health",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3b4f31c2-13ab-4f89-b1d7-2e13e1d976ba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6dcab5515fca65dc97773292a0a5a70015bd1aef06aef60b168ded1f1dc0f9b"
+  },
+  "id": "pG51tuurVgC2TwJM",
+  "tags": []
+}
